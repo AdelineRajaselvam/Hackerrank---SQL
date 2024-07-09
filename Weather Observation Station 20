@@ -1,0 +1,13 @@
+WITH OrderedLatitudes AS (
+    SELECT LAT_N, ROW_NUMBER() OVER (ORDER BY LAT_N) AS RowAsc, 
+                  ROW_NUMBER() OVER (ORDER BY LAT_N DESC) AS RowDesc
+    FROM STATION
+),
+MedianCalculation AS (
+    SELECT LAT_N
+    FROM OrderedLatitudes
+    WHERE RowAsc = RowDesc
+    OR RowAsc + 1 = RowDesc
+)
+SELECT ROUND(AVG(LAT_N), 4) AS median_lat_n
+FROM MedianCalculation;
